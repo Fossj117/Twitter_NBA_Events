@@ -1,4 +1,10 @@
+"""
+File for converting Twitter API JSON output to easier-to-use
+CSV form 
+"""
+
 #json_to_csv.py
+
 import csv
 import sys 
 import json
