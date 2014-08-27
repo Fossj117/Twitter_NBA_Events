@@ -3,10 +3,10 @@ import time, tweepy, sys
 
 ## authentication
 # Consumer keys and access tokens, used for OAuth
-consumer_key = 'uMbwy5zGnqufinM7wpWAQ'
-consumer_secret='MsGLVUuNXbiXggaWeFjyZRVBnfHS4jWw5hsFb28DA'
-access_token='178148375-PAhTEySp5dFPLrDDnJrXSA2DfMaKfypIxY78x2qV'
-access_token_secret='xvvKMp77BDskZO5hfbk4tQF6ZW35WibrNiHbJwogzVmdx'
+consumer_key = ''
+consumer_secret=''
+access_token=''
+access_token_secret=''
 
  
 # OAuth process, using the keys and tokens
