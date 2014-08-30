@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 from dateutil.parser import parse
 
 def get_event_summaries(clean_tweets):
@@ -19,16 +20,24 @@ def get_event_summaries(clean_tweets):
 
 	return event_summaries
 
-def get_events(clean_tweets):
+def get_events(tweets):
 	"""
 	INPUT: pandas DataFrame of tweets w/columns 'text' and 'time'
-	OUTPUT: list of events
+	OUTPUT: list of events (dicts w/keys 'time' (tuple), 'tweets' (dataframe))
 
 	Given a corpus of tweets, return a list of 
-	event objects that can be fed to summarizer
+	events (in some format???)
 	"""
-	pass
+	
+	PCT_CHNG_THRESH = 0.5
 
+	# volume by minute
+	counts = tweets[['text']].groupby(level=[0,1,2]).count()
+	event_times = counts[counts.pct_change() > PCT_CHNG_THRESH].dropna().index.tolist()
+
+	events = [{'time':time, 'tweets': tweets.ix[tuple(np.array(time))]} for time in event_times]
+
+	return events
 
 def clean_tweets(raw_tweets):
 	"""
@@ -45,33 +54,30 @@ def clean_tweets(raw_tweets):
 	tweets = raw_tweets[['text', 'time']].copy()
 	tweets['ptime'] = pd.to_datetime(pd.Series(tweets['time']))
 
-	tweets['day'] = tweets.ptime.apply(lambda x: x.day)
-	tweets['hour'] = tweets.ptime.apply(lambda x: x.hour)
-	tweets['minute'] = tweets.ptime.apply(lambda x: x.minute)
+	tweets['day'] = tweets.ptime.apply(lambda x: x.day).astype(int)
+	tweets['hour'] = tweets.ptime.apply(lambda x: x.hour).astype(int)
+	tweets['minute'] = tweets.ptime.apply(lambda x: x.minute).astype(int)
 
 	tweets = tweets.set_index(['day', 'hour', 'minute'])
 	tweets = tweets[['text']]
 
-	return tweets
+	tweets.sortlevel(inplace=True)
 
-def main(): 
-	"""
-	Main block.
-	"""
+	return tweets
+	
+
+if __name__ == "__main__":
 
 	# Read in the data
-	FNAME = "../data/game2_tweets.csv"
+	FNAME = "./data/game2_tweets.csv"
 	raw_tweets = pd.read_csv(FNAME)
 
 	# Clean up the data
 	clean_tweets = clean_tweets(raw_tweets)
-
+	#events = get_events(clean_tweets)
 	event_summaries = get_event_summaries(clean_tweets)
-	return event_summaries
+	#return event_summaries
 
-
-if __name__ == "__main__":
-	main()
 
 
 
